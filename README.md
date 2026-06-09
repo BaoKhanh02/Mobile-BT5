@@ -950,6 +950,8 @@ Pull Nginx
 
 ---
 
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/102031bd-5c87-4255-b426-b5cbcd3e5b6b" />
+
 # 10. Kiểm tra container
 
 ```bash
@@ -974,6 +976,7 @@ Up
 ```
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/8060f051-5e9c-409c-aa1d-0118113f5ef6" />
 
 # 11. Kiểm tra Network
 
@@ -988,6 +991,7 @@ bt5-monitor_monitor_net
 ```
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/51bb4be3-e0ed-4400-89cd-186caebc27f1" />
 
 Chi tiết:
 
@@ -1007,19 +1011,16 @@ nginx
 ```
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/9d702298-c39d-4e32-9263-2298e843d3c6" />
+
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/fc80ce08-41c7-4c1e-a492-a732457038f7" />
 
 # 12. Kiểm tra MariaDB
 
 Truy cập:
 
 ```bash
-docker exec -it mariadb bash
-```
-
-Đăng nhập:
-
-```bash
-mysql -uroot -p
+docker exec -it mariadb mariadb -uroot -p
 ```
 
 Password:
@@ -1041,6 +1042,7 @@ monitor_db
 ```
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/270158e7-7d0f-4a81-ae4e-24973e4e8226" />
 
 # 13. Kiểm tra Flask API
 
@@ -1060,6 +1062,7 @@ Kết quả:
 ```
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/d188498f-71d6-49fd-a1b7-32a55ac087c2" />
 
 # 14. Kiểm tra Nginx
 
@@ -1076,6 +1079,7 @@ BT5 MONITOR SYSTEM
 ```
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/dd34768f-b1f4-4462-a234-0ebbf2f4ba23" />
 
 # 15. Kiểm tra Node-RED
 
@@ -1088,6 +1092,7 @@ http://localhost:1880
 Phải xuất hiện giao diện Node-RED.
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/39f4f02c-a4a3-4bc3-9fd4-be9270c34b83" />
 
 # 16. Kiểm tra InfluxDB
 
@@ -1100,6 +1105,7 @@ http://localhost:8086
 Phải xuất hiện màn hình setup InfluxDB.
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/a1699269-56b4-46e8-94d5-372fa9be9624" />
 
 # 17. Kiểm tra Grafana
 
@@ -1119,6 +1125,7 @@ password: admin
 Sau đó đổi mật khẩu.
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/42833400-7edd-41e7-8153-eef930467613" />
 
 # 18. Kiểm tra kết nối giữa các container
 
@@ -1155,6 +1162,9 @@ Nếu nhận phản hồi:
 => network hoạt động chính xác.
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/9dbc3bc2-99c7-4388-ae05-1d6591d1eb29" />
+
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/5c90ab1e-44c1-4a7a-85e3-8742c6516d2a" />
 
 # 19. Dừng hệ thống
 
@@ -1171,6 +1181,7 @@ docker compose up -d
 ```
 
 ---
+<img width="1920" height="1029" alt="image" src="https://github.com/user-attachments/assets/a5a555d9-34a2-45aa-bf71-4b1cb9cf3531" />
 
 # Kết quả cần đạt
 
@@ -1193,6 +1204,5 @@ docker compose up -d
 
 ✓ Các container nhìn thấy nhau qua monitor_net
 
-✓ Sẵn sàng chuyển sang Phần 2:
-  MariaDB + InfluxDB + Node-RED thu thập dữ liệu thời tiết thực tế
 ```
+
