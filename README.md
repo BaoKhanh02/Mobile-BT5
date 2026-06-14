@@ -1206,3 +1206,361 @@ docker compose up -d
 
 ```
 
+# HỆ THỐNG GIÁM SÁT THỜI TIẾT REALTIME VÀ CẢNH BÁO TELEGRAM
+
+## Giới thiệu
+
+Dự án xây dựng hệ thống giám sát thời tiết thời gian thực sử dụng Docker Compose với nhiều service hoạt động đồng thời.
+
+Hệ thống có khả năng:
+
+* Thu thập dữ liệu thời tiết từ Open-Meteo API
+* Lưu dữ liệu vào MariaDB và InfluxDB
+* Hiển thị dữ liệu realtime trên Website
+* Trực quan hóa dữ liệu bằng Grafana
+* Gửi cảnh báo Telegram khi vượt ngưỡng
+* Triển khai toàn bộ bằng Docker Compose
+
+---
+
+# Kiến trúc hệ thống
+
+```text
+Open-Meteo API
+       │
+       ▼
+   Node-RED
+   ├────────► MariaDB
+   ├────────► InfluxDB
+   └────────► Telegram Alert
+                    │
+                    ▼
+                 Telegram
+
+MariaDB ──► Flask API ──► Nginx ──► Web Dashboard
+
+InfluxDB ──► Grafana Dashboard
+```
+
+---
+
+# Cấu trúc thư mục
+
+```text
+bt5-monitor/
+│
+├── docker-compose.yml
+│
+├── flask-api/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── app.py
+│
+├── nginx/
+│   ├── nginx.conf
+│   └── html/
+│       ├── index.html
+│       ├── style.css
+│       └── script.js
+│
+├── nodered/
+│
+├── mariadb/
+│
+├── influxdb/
+│
+└── grafana/
+```
+
+---
+
+# Các Container sử dụng
+
+| Container | Chức năng                      |
+| --------- | ------------------------------ |
+| MariaDB   | Lưu dữ liệu thời tiết hiện tại |
+| InfluxDB  | Lưu dữ liệu lịch sử            |
+| Node-RED  | Thu thập và xử lý dữ liệu      |
+| Grafana   | Trực quan hóa dữ liệu          |
+| Flask API | Cung cấp REST API              |
+| Nginx     | Reverse Proxy + Frontend       |
+
+---
+
+# Khởi động hệ thống
+
+## Build và chạy
+
+```bash
+docker compose up -d --build
+```
+
+## Kiểm tra trạng thái container
+
+```bash
+docker ps
+```
+<img width="1627" height="175" alt="image" src="https://github.com/user-attachments/assets/12dbb274-a797-4291-90d6-75f46ae6a993" />
+
+---
+
+# Cấu hình MariaDB
+
+## Tạo Database
+
+```sql
+CREATE DATABASE monitor_db;
+```
+
+## Tạo bảng
+
+```sql
+CREATE TABLE weather_realtime (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    temperature FLOAT,
+    humidity FLOAT,
+    windspeed FLOAT,
+    update_time DATETIME
+);
+```
+
+---
+
+# Thu thập dữ liệu bằng Node-RED
+
+Node-RED gọi API Open-Meteo mỗi 5 giây:
+
+```text
+https://api.open-meteo.com/v1/forecast
+```
+
+Sau đó:
+
+* Parse JSON
+* Định dạng dữ liệu
+* Ghi MariaDB
+* Ghi InfluxDB
+* Kiểm tra ngưỡng cảnh báo
+
+---
+
+# 📸 Hình ảnh Flow Node-RED
+
+## Flow tổng thể
+
+<img width="1133" height="675" alt="image" src="https://github.com/user-attachments/assets/af3c43ae-6285-4360-b74c-9339103adbb7" />
+
+---
+
+## Function Format Data
+
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/9364a176-699d-454f-a035-27bbfcafe81e" />
+
+---
+
+## Kết nối MariaDB
+
+<img width="688" height="363" alt="image" src="https://github.com/user-attachments/assets/80a21eb7-7070-4b89-9385-e987582a9755" />
+
+---
+
+## Kết nối InfluxDB
+
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/88c6f8fc-1420-42f7-871e-ccec37a84829" />
+
+---
+
+# InfluxDB
+
+## Tạo Organization
+
+```text
+monitor_org
+```
+
+## Tạo Bucket
+
+```text
+weather_bucket
+```
+
+---
+
+## Giao diện InfluxDB
+
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/9023b115-b310-47d1-8e34-e80fde696606" />
+
+---
+
+# Grafana Dashboard
+
+Grafana kết nối trực tiếp đến InfluxDB bằng Flux Query.
+
+Các biểu đồ:
+
+* Nhiệt độ
+* Độ ẩm
+* Tốc độ gió
+
+---
+
+## Cấu hình Data Source
+
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/4bb39366-467c-4998-bb0b-52ddd2c91949" />
+
+---
+
+## Dashboard hoàn chỉnh
+
+<img width="1920" height="1020" alt="image" src="https://github.com/user-attachments/assets/7fb047eb-daee-4cb1-b708-128e490b8396" />
+
+---
+
+# Website Realtime
+
+Website sử dụng:
+
+* HTML
+* CSS
+* Javascript
+* Fetch API
+
+Dữ liệu được cập nhật mỗi 3 giây.
+
+---
+
+## Giao diện Dashboard
+
+<img width="1920" height="1028" alt="image" src="https://github.com/user-attachments/assets/6bc22606-f7eb-46cd-bb17-03d80a89e100" />
+
+---
+
+# Telegram Alert
+
+Điều kiện cảnh báo:
+
+```text
+Nhiệt độ > 30°C
+hoặc
+Nhiệt độ < 20°C
+```
+
+Node-RED gửi cảnh báo qua Telegram Bot.
+
+---
+
+## Bot Telegram
+
+<img width="1397" height="912" alt="image" src="https://github.com/user-attachments/assets/af08625b-01a0-4703-a7bb-426bdd927efb" />
+
+<img width="1400" height="910" alt="image" src="https://github.com/user-attachments/assets/b617b658-7081-4bb6-9a97-83b3a9e16ab4" />
+
+---
+
+# Flask API
+
+API:
+
+```http
+GET /api/weather
+```
+
+Ví dụ kết quả:
+
+```json
+{
+  "temperature": 30.1,
+  "humidity": 80,
+  "windspeed": 12.5,
+  "update_time": "2026-06-14 10:30:00"
+}
+```
+
+---
+
+# Kiểm thử hệ thống
+
+## Kiểm tra API
+
+```bash
+curl http://localhost/api/weather
+```
+
+---
+
+## Kiểm tra dữ liệu MariaDB
+
+```bash
+docker exec -it mariadb mariadb -uroot -p123456
+```
+
+```sql
+USE monitor_db;
+
+SELECT * FROM weather_realtime;
+```
+
+---
+
+# Backup và Restore
+
+## Backup
+
+```bash
+docker export nodered > nodered.tar
+docker export mariadb > mariadb.tar
+docker export influxdb > influxdb.tar
+docker export grafana > grafana.tar
+docker export flask-api > flask-api.tar
+docker export nginx > nginx.tar
+```
+
+```bash
+tar -czvf bt5_backup.tar.gz *.tar
+```
+
+---
+
+## Restore
+
+```bash
+tar -xzvf bt5_backup.tar.gz
+```
+
+```bash
+docker import mariadb.tar mariadb_restore
+docker import influxdb.tar influxdb_restore
+docker import grafana.tar grafana_restore
+docker import flask-api.tar flask_restore
+docker import nginx.tar nginx_restore
+docker import nodered.tar nodered_restore
+```
+
+---
+
+# Kết quả đạt được
+
+* Thu thập dữ liệu thời tiết tự động
+* Lưu dữ liệu trên MariaDB và InfluxDB
+* Hiển thị realtime trên Website
+* Trực quan hóa dữ liệu bằng Grafana
+* Cảnh báo Telegram tự động
+* Triển khai bằng Docker Compose
+* Hỗ trợ Backup và Restore
+
+---
+
+# Công nghệ sử dụng
+
+* Docker Compose
+* Node-RED
+* MariaDB
+* InfluxDB 2.x
+* Grafana
+* Flask
+* Nginx
+* Telegram Bot API
+* Open-Meteo API
+
+---
+
